@@ -11,8 +11,23 @@ Tools::~Tools() {}
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
-  /**
-  TODO:
-    * Calculate the RMSE here.
-  */
+  VectorXd rmse(4);
+  rmse << 0, 0, 0, 0;
+
+  unsigned long eSize = estimations.size();
+  unsigned long gSize = ground_truth.size();
+  if (eSize == 0 || gSize != eSize) {
+    std::cout << "Invalid estimation or ground_truth data" << std::endl;
+  }
+
+  for (unsigned int i = 0; i < eSize; i++) {
+    VectorXd residual = estimations[i] - ground_truth[i];
+    residual = residual.array().pow(2);
+    rmse += residual;
+  }
+
+  rmse = rmse / eSize;
+  rmse = rmse.array().sqrt();
+
+  return rmse;
 }
