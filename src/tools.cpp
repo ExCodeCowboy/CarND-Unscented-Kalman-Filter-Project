@@ -20,6 +20,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
     std::cout << "Invalid estimation or ground_truth data" << std::endl;
   }
 
+  //TODO linearize
   for (unsigned int i = 0; i < eSize; i++) {
     VectorXd residual = estimations[i] - ground_truth[i];
     residual = residual.array().pow(2);
