@@ -385,35 +385,20 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   cout<< "Zsig: " << endl << Zsig << endl <<endl;
 
   //calculate mean predicted measurement
-  //mean predicted measurement
-  VectorXd z_pred = VectorXd(n_z);
-  z_pred.fill(0.0);
-  for (int i=0; i < n_sig_aug_; i++) {
-    z_pred = z_pred + (weights_(i) * Zsig.col(i));
-  };
-  z_pred(1) = AngleFix(z_pred(1));
-
+  VectorXd z_pred = Zsig * weights_;
   cout<<"pred_z: "<<endl<<z_pred<<endl<<endl;
-
-  //measurement covariance matrix S
-  MatrixXd S = MatrixXd(n_z,n_z);
-  S.fill(0.0);
-  for (int i = 0; i < n_sig_aug_; i++) {  //2n+1 simga points
-    //residual
-    VectorXd z_diff = Zsig.col(i) - z_pred;
-
-    //angle normalization
-    z_diff(1) = AngleFix(z_diff(1));
-
-    S = S + (weights_(i) * z_diff) * z_diff.transpose();
-  }
 
   MatrixXd R = MatrixXd(n_z,n_z);
   R.fill(0.0);
   R <<    std_radr_*std_radr_, 0, 0,
       0, std_radphi_*std_radphi_, 0,
       0, 0,std_radrd_*std_radrd_;
-  S = S + R;
+
+  //calculate measurement covariance matrix S
+  MatrixXd z_pred_diff = Zsig - z_pred.replicate(1, n_sig_aug_);
+  z_pred(1) = AngleFix(z_pred(1));
+  MatrixXd w_z_pred_diff = z_pred_diff.array() * weights_.transpose().replicate(n_z,1).array();
+  MatrixXd S = (w_z_pred_diff * z_pred_diff.transpose()) + R;
 
   //calculate cross correlation matrix
   MatrixXd Tc = MatrixXd(n_x_, n_z);
