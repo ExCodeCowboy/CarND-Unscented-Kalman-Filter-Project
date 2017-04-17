@@ -111,6 +111,24 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+  MatrixXd BuildZsig(MatrixXd &Xsig_pred, int n_sig) const;
+
+  MatrixXd BuildRadarTc(int n_sig,
+                             MatrixXd &Zsig,
+                             VectorXd &z_pred,
+                             int n_x,
+                             MatrixXd &Xsig,
+                             VectorXd &x,
+                             VectorXd &weights) const;
+
+  MatrixXd BuildRadarS(MatrixXd &Zsig,
+                        VectorXd &weights,
+                        VectorXd &z_pred,
+                        int n_sig,
+                        double std_radr,
+                        double std_radphi,
+                        double std_radrd) const;
 };
 
 #endif /* UKF_H */
