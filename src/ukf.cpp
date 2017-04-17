@@ -34,23 +34,23 @@ UKF::UKF() {
 
   // initial covariance matrix
   P_ = MatrixXd(n_x_, n_x_);
-  P_ << 2, 0, 0, 0,0,
-      0, 4, 0, 0,0,
+  P_ << 1, 0, 0, 0,0,
+      0, 1, 0, 0,0,
       0, 0, 1, 0,0,
       0, 0, 0, 0.5,0,
       0, 0, 0, 0,0.5;
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 2.0;
+  std_a_ = 0.5;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 1.5;
+  std_yawdd_ =1.5;
 
   // Laser measurement noise standard deviation position1 in m
-  std_laspx_ = 0.15;
+  std_laspx_ = 0.2;
 
   // Laser measurement noise standard deviation position2 in m
-  std_laspy_ = 0.15;
+  std_laspy_ = 0.2;
 
   // Radar measurement noise standard deviation radius in m
   std_radr_ = 0.3;
@@ -62,7 +62,7 @@ UKF::UKF() {
   std_radrd_ = 0.3;
 
   // Setup lambda
-  lambda_aug_ = 3 - n_aug_;
+  lambda_aug_ = 7 - n_aug_;
 
 
   weights_ = VectorXd(n_sig_aug_);
@@ -157,10 +157,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   time_us_ = meas_package.timestamp_;
   std::cout << "time D: " << meas_package.timestamp_ << " " << delta_t << " " << meas_package.sensor_type_
             << std::endl;
-//  while (delta_t > 1) {
-//    Prediction(0.5);
-//    delta_t -= 0.5;
-//  }
+  while (delta_t > 0.05) {
+    Prediction(0.05);
+    delta_t -= 0.05;
+  }
   Prediction(delta_t);
 
 
@@ -244,10 +244,10 @@ void UKF::Prediction(double delta_t) {
     double v_noise = point(5);
     double yaw_rate_noise = point(6);
 
-    yaw_rate = min(yaw_rate, 20.0);
-    yaw_rate = max(yaw_rate, -20.0);
-    v = min(v, 90.0);
-    v = max(v, -90.0);
+    yaw_rate = min(yaw_rate, 3.0);
+    yaw_rate = max(yaw_rate, -3.0);
+    v = min(v, 75.0);
+    v = max(v, -75.0);
 
     //New State
     double n_px, n_py, n_v, n_yaw, n_yaw_rate;
