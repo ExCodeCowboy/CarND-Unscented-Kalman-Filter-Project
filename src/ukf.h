@@ -59,6 +59,9 @@ public:
   ///* Weights of sigma points
   VectorXd weights_;
 
+  ///* Variance matrix for lidar
+  MatrixXd laser_R_;
+
   ///* State dimension
   int n_x_;
 
